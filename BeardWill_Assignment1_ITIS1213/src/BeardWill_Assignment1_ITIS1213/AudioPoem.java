@@ -5,12 +5,7 @@
  */
 package BeardWill_Assignment1_ITIS1213;
 
-import BookClasses.FileChooser;
 import BookClasses.Sound;
-import BookClasses.SoundException;
-import BookClasses.SoundSample;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.File;
 
 /**
@@ -83,30 +78,29 @@ public class AudioPoem {
         double samplingRate = myWordArray[0].getSamplingRate();
         int pauseFrames = (int) (samplingRate * (pause / 1000));
         int totalSamples = 0;
-        for(int soundArray = 0; soundArray < numWords; soundArray++) {
+        for (int soundArray = 0; soundArray < numWords; soundArray++) {
             totalSamples += myWordArray[soundArray].getLength();
         }
         totalSamples += pauseFrames * (numWords - 1);
-        
+
         Sound exportSound = new Sound(totalSamples);
-        
-        
-        for(int i = 0, exportSoundSample = 0; i < numWords; i++) {
-            
+
+        for (int i = 0, exportSoundSample = 0; i < numWords; i++) {
+
             //write word samples from soundArray myWordArray to exportSound's sampleArray
-            for(int currentSample = 0; 
+            for (int currentSample = 0;
                     currentSample < myWordArray[i].getLength(); currentSample++, exportSoundSample++) {
                 exportSound.setSampleValueAt(exportSoundSample, myWordArray[i].getSampleValueAt(currentSample));
             }
-            
+
             //write number of samples in specified pause time to exportSound's sampleArray to a value of 0
-            for(int pauseSample = 0; pauseSample < pauseFrames; pauseSample++, exportSoundSample++) {
+            for (int pauseSample = 0; pauseSample < pauseFrames; pauseSample++, exportSoundSample++) {
                 exportSound.setSampleValueAt(exportSoundSample, 0);
             }
         }
         File exportFile = new File(path, filename);
         exportSound.write(exportFile.getPath());
-        
+
     }
 
     /**
@@ -123,6 +117,69 @@ public class AudioPoem {
             Thread.sleep(pause);
         }
     }
+    /**
+     * 
+     * @param totalWords
+     * @param pause
+     * @param filename
+     * @param path
+     * @throws InterruptedException
+     * THIS METHOD HAS A TIMING ERROR IN THE EXPORTED .WAV FILE
+     */
+    public void playRandomOrder(int totalWords, int pause, String filename, String path) throws InterruptedException {
+        
+        int numSamples = 0;
+        double samplingRate = myWordArray[0].getSamplingRate();
+        int pauseFrames = (int) (samplingRate * (pause / 1000));
+        
+        //integer array used to keep track of the order that the random words are chosen in for usage when outputting a .wav file
+        int[] wordOrder = new int[100];
+        
+        //for loop that runs through a number of times equal to totalWords and each time chooses a random index to play from
+        //myWordArray. Also sets the values of the int[] wordOrder for usage later. Also increments the sampleLength for the
+        //creation of Sound exportSound
+        for (int currentWord = 0; currentWord < totalWords; currentWord++) {
+            int randomIndex = (int) (Math.random() * numWords);
+            myWordArray[randomIndex].blockingPlay();
+            numSamples += myWordArray[randomIndex].getNumSamples();
+            wordOrder[currentWord] = randomIndex;
+            Thread.sleep(pause);
+        }
+        
+        //adds the number of samples that the pauses in between words make up to numSamples
+        numSamples += (totalWords - 1) * (pauseFrames);
+        
+        //creates the Sound object to be exported, passes it the calculated number of samples
+        Sound exportSound = new Sound(numSamples);
+        
+        //beginning of the loop to create the Sound object, loops through a number of times equal to totalWords, each time
+        //writing the samples of the current word, along with a pause into it, before continuing to loop
+        //exportSoundSample is only incremented in the loops integrated into this loop, so it keeps track of which sample index
+        //it should be at for the Sound itself
+        for(int i = 0, exportSoundSample = 0; i < totalWords; i++) {
+            
+            //the loop that takes in the length in samples of the current word that is being written over to the new Sound
+            //object. the order at which it the random words were chosen are stored in the in[] wordOrder. By going
+            //through the array incrementally, only up to the passed in parameter totalWords
+            //thus being able to correctly increment through the number of samples in each Sound object within the
+            //Sound[] myWordArray
+            for(int wordSample = 0; wordSample < myWordArray[wordOrder[i]].getNumSamples(); wordSample++, exportSoundSample++) {
+                
+                exportSound.setSampleValueAt(exportSoundSample, myWordArray[wordOrder[i]].getSampleValueAt(wordSample));
+                
+            }
+            
+            //increments through the samples in exportSound for the number of samples in a calculated pause
+            //and sets them equal to zero to simulate silence
+            for(int pauseSample = 0; pauseSample < pauseFrames; pauseSample++, exportSoundSample++) {
+                
+                exportSound.setSampleValueAt(exportSoundSample, 0);
+                
+            }
+        }
+        File exportFile = new File(path, filename);
+        exportSound.write(exportFile.getPath());
+    }
 
     /**
      * Plays the words in random order, playing each word only once
@@ -131,26 +188,30 @@ public class AudioPoem {
      * @throws InterruptedException
      */
     public void playRandomUnique(int pause) throws InterruptedException {
-        
+
         boolean[] hasBeenPlayed = new boolean[numWords];
         boolean isDone = false;
         while (isDone == false) {
-            
+
             int randomIndex = (int) (Math.random() * numWords);
-            
+
             if (hasBeenPlayed[randomIndex] == false) {
                 myWordArray[randomIndex].blockingPlay();
                 Thread.sleep(pause);
                 hasBeenPlayed[randomIndex] = true;
             }
             isDone = true;
-            
+
             for (int i = 0; isDone && i < numWords; i++) {
                 if (hasBeenPlayed[i] == false) {
                     isDone = false;
                 }
             }
         }
+    }
+    
+    public void playRandomUnique(int pause, String filename, String path) {
+        
     }
 
     /**
@@ -161,10 +222,14 @@ public class AudioPoem {
      * @throws InterruptedException
      */
     public void playReverseOrder(int pause) throws InterruptedException {
-        for(int i = numWords - 1; i >= 0; i--) {
+        for (int i = numWords - 1; i >= 0; i--) {
             myWordArray[i].blockingPlay();
             Thread.sleep(pause);
         }
+    }
+    
+    public void playReverseOrder(int pause, String filename, String path) {
+        
     }
 
     /**
@@ -176,19 +241,23 @@ public class AudioPoem {
      * @throws InterruptedException
      */
     public void playDoublets(int numDoublets) throws InterruptedException {
-        if(numWords < 2) {
+        if (numWords < 2) {
             System.out.println("Not enough words to make a doublet!");
             return;
-        } 
-        
-        for(int i = 0; i < numDoublets; i++) {
-            
+        }
+
+        for (int i = 0; i < numDoublets; i++) {
+
             int randomIndex = (int) (Math.random() * (numWords - 1));
             myWordArray[randomIndex].blockingPlay();
             Thread.sleep(100);
             myWordArray[randomIndex + 1].blockingPlay();
             Thread.sleep(400);
         }
+    }
+    
+    public void playDoublets(int numDoublets, String filename, String path) {
+        
     }
 
     /**
@@ -201,13 +270,13 @@ public class AudioPoem {
      * @throws InterruptedException
      */
     public void playTriplets(int numTriplets) throws InterruptedException {
-        if(numWords < 3) {
+        if (numWords < 3) {
             System.out.println("Not enough words to make a doublet!");
             return;
-        } 
-        
-        for(int i = 0; i < numTriplets; i++) {
-            
+        }
+
+        for (int i = 0; i < numTriplets; i++) {
+
             int randomIndex = (int) (Math.random() * (numWords - 2));
             myWordArray[randomIndex].blockingPlay();
             Thread.sleep(100);
@@ -217,5 +286,9 @@ public class AudioPoem {
             Thread.sleep(400);
         }
 
+    }
+    
+    public void playTriplets(int numTriplets, String filename, String path) {
+        
     }
 }
