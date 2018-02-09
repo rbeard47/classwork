@@ -75,14 +75,13 @@
         public void play(int pause, String filename, String path) throws InterruptedException {
             /*plays the words in order with a specified pause in between each and writes this new sound to a file with a
              *specified location
+             *CURRENT METHOD
              */
             for (int i = 0; i < numWords; i++) {
                 myWordArray[i].blockingPlay();
                 Thread.sleep(pause);
-                
             }
-
-
+            
         }
 
         /**
@@ -141,4 +140,67 @@
         public void playTriplets(int numTriplets) throws InterruptedException {
 
         }
+        
+        /* This section conntains all of the
+           helper methods that I have written to 
+           aid the simplification of my other code
+        */
+        int i = 0;
+        double samplingRate = myWordArray[0].getSamplingRate();
+        Sound exportSound = null;
+        Sound soundThis = myWordArray[0];
+        Sound soundIs = myWordArray[1];
+        Sound soundA = myWordArray[2];
+        Sound soundTest = myWordArray[3];
+        int numSamplesThis = soundThis.getNumSamples();
+        int numSamplesIs = soundIs.getNumSamples();
+        int numSamplesA = soundA.getNumSamples();
+        int numSamplesTest = soundTest.getNumSamples();
+        public int thisSound() {
+            //writes the samples from the originalSource of the word "this"
+            //to the new Sound object
+            
+            for(int j = 0; j < numSamplesThis; i++, j++) {
+            exportSound.setSampleValueAt(i, soundThis.getSampleValueAt(j));
+        }        
+         return i;  
+        }
+        public int isSound() {
+            //writes the samples from the originalSource of the word "is"
+            //to the new Sound object
+            
+            for(int j = 0; j < numSamplesIs; i++, j++) {
+            exportSound.setSampleValueAt(i, soundIs.getSampleValueAt(j));
+        }        
+         return i;  
+        }
+        public int aSound() {
+            //writes the samples from the originalSource of the word "a"
+            //to the new Sound object
+            
+            for(int j = 0; j < numSamplesA; i++, j++) {
+            exportSound.setSampleValueAt(i, soundA.getSampleValueAt(j));
+        }        
+         return i;  
+        }
+        public int testSound() {
+            //writes the samples from the originalSource of the word "test"
+            //to the new Sound object
+            
+            for(int j = 0; j < numSamplesTest; i++, j++) {
+            exportSound.setSampleValueAt(i, soundTest.getSampleValueAt(j));
+        }        
+         return i;  
+        }
+        public int space(int time) {
+            //writes in a space of silence
+            //to the new Sound object
+            
+            for(int j = 0; j < (int) samplingRate * time; i++, j++) {
+            exportSound.setSampleValueAt(i, soundIs.getSampleValueAt(j));
+        }        
+         return i;  
+        }
+        
+        
     }
