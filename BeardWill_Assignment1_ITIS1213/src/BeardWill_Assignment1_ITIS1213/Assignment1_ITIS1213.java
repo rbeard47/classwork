@@ -89,8 +89,13 @@ public class Assignment1_ITIS1213 {
         //**********************************************************
         //**********************************************************
         // TODO: Put your Assignment 1 code to play the different AudioPoem methods here
-        myPoem.play();
-
+        //myPoem.play();
+        //myPoem.playRandomOrder(10, 100);
+        //myPoem.playRandomUnique(100);
+        //myPoem.playReverseOrder(100);
+        //myPoem.playDoublets(5);
+        //myPoem.playTriplets(5);
+        myPoem.play(200, "exportSound.wav", "C:\\netBeansProjects\\classwork");
         // Part 4: When you get to part 4, comment everything from line 28 through line 93, then uncomment the four lines of 
         // code below and run the project to see what happens.
         // Then look at the CupSong class as an example for how to build your own song-playing class.
