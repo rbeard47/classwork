@@ -46,7 +46,7 @@ public class Assignment1_ITIS1213 {
     File spliceFilename = null;
     // Reset the open dialog title
     myChooser.setDialogTitle("Now select the file that contains the splice points...");
-    
+
     // open the dialog again to pick the spliceFilename
     retVal = myChooser.showOpenDialog(null);
 
@@ -60,7 +60,7 @@ public class Assignment1_ITIS1213 {
     // I moved these variables closer to where they'll be used.
     int spliceIndex[] = new int[200];
     int numSplicePoints = 0;
-    
+
     // This code should check whether or not soundFilename is null before calling getPath()
     // create a sound object from this filename
     Sound mySound = new Sound(soundFilename.getPath());
@@ -96,15 +96,16 @@ public class Assignment1_ITIS1213 {
     //**********************************************************
     //**********************************************************
     // TODO: Put your Assignment 1 code to play the different AudioPoem methods here
-    myPoem.play();
-    myPoem.playRandomOrder(10, 100);
-    myPoem.playRandomUnique(100);
-    myPoem.playReverseOrder(100);
-    myPoem.playDoublets(5);
-    myPoem.playTriplets(5);
-    myPoem.play(200, "exportSound.wav", "C:\\netBeansProjects");
-    myPoem.playRandomOrder(10, 200, "exportSoundRandomOrder.wav", "C:\\netBeansProjects");
-    
+//    myPoem.play();
+//    myPoem.playRandomOrder(10, 100);
+//    myPoem.playRandomUnique(100);
+//    myPoem.playReverseOrder(100);
+//    myPoem.playDoublets(5);
+//    myPoem.playTriplets(6);
+//    myPoem.play(200, "exportSound.wav", "C:\\netBeansProjects");
+//    myPoem.playRandomOrder(10, 200, "exportSoundRandomOrder.wav", "C:\\netBeansProjects");
+    myPoem.playTriplets(2, "exportSoundTriples.wav", "c:\\netbeansprojects");
+    myPoem.playDoublets(6, "exportSoundDoubles.wav", "c:\\netbeansprojects");
     // Part 4: When you get to part 4, comment everything from line 28 through line 93, then uncomment the four lines of 
     // code below and run the project to see what happens.
     // Then look at the CupSong class as an example for how to build your own song-playing class.

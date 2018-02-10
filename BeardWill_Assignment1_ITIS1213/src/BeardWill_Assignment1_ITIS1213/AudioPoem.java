@@ -81,9 +81,8 @@ public class AudioPoem {
    * @throws InterruptedException
    */
   public void play(int pause, String filename, String path) throws InterruptedException {
-    /*plays the words in order with a specified pause in between each and writes this new sound to a file with a
-         *specified location
-     */
+    // plays the words in order with a specified pause in between each and writes this new sound to
+    // a file with a specified location 
 
     double samplingRate = myWordArray[0].getSamplingRate();
     int pauseFrames = (int) (samplingRate * (pause / 1000));
@@ -136,13 +135,18 @@ public class AudioPoem {
    * @param path
    * @throws InterruptedException THIS METHOD HAS A TIMING ERROR IN THE EXPORTED .WAV FILE
    */
-  public void playRandomOrder(int totalWords, int pause, String filename, String path) throws InterruptedException {
+  public void playRandomOrder(int totalWords, int pause, String filename, String path)
+          throws InterruptedException {
+    if (numWords <= 0) {
+      return;
+    }
+
     int numSamples = 0;
     double samplingRate = myWordArray[0].getSamplingRate();
     int pauseFrames = (int) (samplingRate * (pause / 1000));
 
     //integer array used to keep track of the order that the random words are chosen in for usage when outputting a .wav file
-    int[] wordOrder = new int[100];
+    int[] wordOrder = new int[totalWords];
 
     //for loop that runs through a number of times equal to totalWords and each time chooses a random index to play from
     //myWordArray. Also sets the values of the int[] wordOrder for usage later. Also increments the sampleLength for the
@@ -183,11 +187,6 @@ public class AudioPoem {
     }
 
     File exportFile = new File(path, filename);
-    
-    if(exportFile.exists()) {
-      exportFile.delete();
-    }
-    
     exportSound.write(exportFile.getPath());
   }
 
@@ -249,19 +248,7 @@ public class AudioPoem {
    * @throws InterruptedException
    */
   public void playDoublets(int numDoublets) throws InterruptedException {
-
-    if (numWords < 2) {
-      System.out.println("Not enough words to make a doublet!");
-      return;
-    }
-
-    for (int i = 0; i < numDoublets; i++) {
-      int randomIndex = (int) (Math.random() * (numWords - 1));
-      myWordArray[randomIndex].blockingPlay();
-      Thread.sleep(100);
-      myWordArray[randomIndex + 1].blockingPlay();
-      Thread.sleep(400);
-    }
+    playNlets(2, 100, 400, numDoublets);
   }
 
   /**
@@ -273,18 +260,7 @@ public class AudioPoem {
    */
   public void playDoublets(int numDoublets, String filename, String path)
           throws InterruptedException {
-
-    if (numWords < 2) {
-      return;  // Can't make a doublet
-    }
-
-    for (int i = 0; i < numDoublets; i++) {
-      int randomIndex = (int) (Math.random() * (numWords - 1));
-      myWordArray[randomIndex].blockingPlay();
-      Thread.sleep(100);
-      myWordArray[randomIndex + 1].blockingPlay();
-      Thread.sleep(400);
-    }
+    playNlets(2, 100, 400, numDoublets, filename, path);
   }
 
   /**
@@ -296,24 +272,113 @@ public class AudioPoem {
    * @throws InterruptedException
    */
   public void playTriplets(int numTriplets) throws InterruptedException {
+    playNlets(3, 100, 400, numTriplets);
+  }
 
-    if (numWords < 3) {
-      System.out.println("Not enough words to make a triplet!");
+  public void playTriplets(int numTriplets, String filename, String path)
+          throws InterruptedException {
+    playNlets(3, 100, 400, numTriplets, filename, path);
+  }
+
+  /**
+   *
+   * @param n
+   * @param pauseBetweenWords
+   * @param pauseBetweenRounds
+   * @param numberOfRounds
+   * @throws InterruptedException
+   */
+  public void playNlets(int n, int pauseBetweenWords, int pauseBetweenRounds, int numberOfRounds)
+          throws InterruptedException {
+    if (numWords < n || n < 1) {
       return;
     }
 
-    for (int i = 0; i < numTriplets; i++) {
-      int randomIndex = (int) (Math.random() * (numWords - 2));
-      myWordArray[randomIndex].blockingPlay();
-      Thread.sleep(100);
-      myWordArray[randomIndex + 1].blockingPlay();
-      Thread.sleep(100);
-      myWordArray[randomIndex + 2].blockingPlay();
-      Thread.sleep(400);
+    for (int i = 0; i < numberOfRounds; i++) {
+      int randomIndex = (int) Math.round(Math.random() * (numWords - n));
+      for (int j = randomIndex; j < n + randomIndex; j++) {
+        myWordArray[j].blockingPlay();
+        Thread.sleep(pauseBetweenWords);
+      }
+      Thread.sleep(pauseBetweenRounds);
     }
   }
 
-  public void playTriplets(int numTriplets, String filename, String path) {
+  public void playNlets(int n, int pauseBetweenWords, int pauseBetweenRounds, int numNlets,
+          String filename, String path) throws InterruptedException {
 
+    // Range check the value of n to reject too large or too small numbers
+    if (numWords < n || n < 1) {
+      return;
+    }
+
+    // Create an output array that will contain all of the played sounds as well as the pause sounds
+    // and then write the new output array to a file.
+    // total sounds will be equals to n * numNlets + (pauseBetweenWords * (n - 1))
+    int totalSounds = 2 * n * numNlets - 1;
+
+    // The outputSounds layout will look like this
+    // outputSounds[0] = first sound to play
+    // outputSounds[1] = first pause
+    // outputSounds[2] = next sound
+    // outputSounds[3] = next pause
+    // ...
+    Sound[] outputSounds = new Sound[totalSounds];
+
+    // Create a new sound to represent the pauses between words.  Later, the copy constructor will
+    // be called to write this pause between each sound in the outputArray
+    Sound pauseSound = new Sound(pauseBetweenWords);
+    int pauseSoundSamples = pauseSound.getNumSamples();
+
+    // Keep track of the number of total samples in the outputArray
+    int totalSamples = 0;
+
+    // Do the full loop numNlet number of times
+    for (int i = 0; i < numNlets; i++) {
+      int randomIndex = (int) (Math.random() * (numWords - n) + 0.5);
+
+      // Setup an inner loop to select runs of sounds n words in length
+      for (int j = 0; j < n; j++) {
+        // Write the sound to the index specified by i * n + j
+        int outputIndex = 2 * (i * n + j);
+        outputSounds[outputIndex] = new Sound(myWordArray[randomIndex + j]);
+        totalSamples += myWordArray[randomIndex + j].getNumSamples();
+
+        // Play the sound
+        myWordArray[randomIndex + j].blockingPlay();
+
+        // Pause
+        Thread.sleep(pauseBetweenWords);
+
+        // Call the copy constructor passing the pauseSound and write it to the next index in the 
+        // outputSounds array except for the final pause which is omitted.
+        if (outputIndex + 1 < totalSounds) {
+          outputSounds[outputIndex + 1] = new Sound(pauseSound);
+        }
+
+        totalSamples += pauseSoundSamples;
+      }
+
+      Thread.sleep(pauseBetweenRounds);
+    }
+
+//     This takes the sampling rate and adds 0.5 to it to handle how Java rounds by default.
+//     For simple casts to int, java drops the decimal places which rounds to nearest neighbor
+//     i.e. 2.95 rounds to 2 with int cast.  But adding 0.5 changes the behavior.
+//     i.e. 2.95 + 0.5 = 3.45 which rounds down to 3.
+    int samplingRate = (int) (myWordArray[0].getSamplingRate() + 0.5);
+    // Create a final sound to write to disk
+    Sound finalSound = new Sound(totalSamples, samplingRate);
+
+    // At this point, the outputSounds array should contain all the random sounds and pauses between
+    // sounds so write it to the output file.
+    for (int i = 0, finalSoundIndex = 0; i < outputSounds.length; i++) {
+      for (int j = 0; j < outputSounds[i].getLength(); j++) {
+        finalSound.setSampleValueAt(finalSoundIndex++, outputSounds[i].getSampleValueAt(j));
+      }
+    }
+
+    File outputFile = new File(path, filename);
+    finalSound.write(outputFile.getPath());
   }
 }
