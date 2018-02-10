@@ -13,7 +13,7 @@ import BookClasses.MidiPlayer;
  */
 public class CupSong {
 
-    private MidiPlayer myPlayer;
+    private final MidiPlayer myPlayer;
 
     /**
      * Creates a MIDIPlayer to use to play the song
