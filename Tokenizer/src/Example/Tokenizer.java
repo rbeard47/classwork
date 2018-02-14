@@ -10,7 +10,8 @@ import static java.lang.Character.isLetter;
 import static java.lang.Character.isWhitespace;
 
 /**
- *
+ * This is a very basic tokenizer that simply returns the type of character at 
+ * each position in the input String
  * @author Rob
  */
 public class Tokenizer {
@@ -28,7 +29,7 @@ public class Tokenizer {
   public static enum Token {
     CHAR, NUMBER, STRING, SPECIAL_CHAR, WS, BACKSLASH, BANG, AT, HASH, DOLLAR, PERCENT, CARET,
     AMPERSAND, STAR, LPAREN, RPAREN, MINUS, UNKNOWN, DIGIT, EOF, WHITESPACE, PLUS, LBRACE, RBRACE,
-    LBRACKET, RBRACKET, TILDE, EQUALS
+    LBRACKET, RBRACKET, TILDE, EQUALS, QUOTE, DOUBLEQUOTE
   };
 
   /**
@@ -59,6 +60,8 @@ public class Tokenizer {
     // Handle other special characters
     switch (c) {
       case ' ':
+      case '\t':
+      case '\n':
         return Token.WHITESPACE;
       case '\\':
         return Token.BACKSLASH;
@@ -98,8 +101,13 @@ public class Tokenizer {
         return Token.LBRACE;
       case '}':
         return Token.RBRACE;
+      case '"':
+        return Token.DOUBLEQUOTE;
+      case '\'':
+        return Token.QUOTE;
       default:
         return Token.UNKNOWN;
+        
     }
   }
 }

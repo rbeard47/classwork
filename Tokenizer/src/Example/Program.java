@@ -6,6 +6,7 @@
 package Example;
 
 import Example.Tokenizer.Token;
+import java.util.Iterator;
 
 /**
  *
@@ -22,6 +23,18 @@ public class Program {
     
     for(Token t = tokenizer.Next(); t != Token.EOF; t = tokenizer.Next()){
       System.out.println(t);
+    }
+    
+    Lexer lexer = new Lexer("This if 32434 \t is for a test 55 ^#$#$435#%%$");
+    
+    lexer.Lex();
+    
+    Iterator<Example.Token> i = lexer.iterator();
+    
+    while(i.hasNext()) {
+      Example.Token t = i.next();
+      System.out.format("type=%s begin=%d beyond=%d value=%s\n", t.getTokenType(),
+              t.getTokenStart(), t.getTokenEnd(), t.getStringValue());
     }
   }
 }
