@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class Wheel {
     // enumerated type, wheel wedges can be any of these
-    public enum WedgeType {MONEY, BANKRUPT, LOSE_TURN}
+    public enum WedgeType {MONEY, BANKRUPT, LOSE_TURN, PRIZE}
     // the type for the current sping
     private WedgeType spinType;
     // if a money wedge, the amount
@@ -22,15 +22,18 @@ public class Wheel {
      */
     public Wheel() {
         // put a bankrupt wedge on the wheel
-        wedges.add(new Wedge(WedgeType.BANKRUPT));
+//        wedges.add(new Wedge(WedgeType.BANKRUPT));
+//        
+//        // put a lose-turn wedge on the wheel
+//        wedges.add(new Wedge(WedgeType.LOSE_TURN));
+//        
+//        // put 20 money wedges on the wheel
+//        for (int i = 1; i < 20; i++) {
+//            wedges.add(new Wedge(WedgeType.MONEY));
+//        }
         
-        // put a lose-turn wedge on the wheel
-        wedges.add(new Wedge(WedgeType.LOSE_TURN));
-        
-        // put 20 money wedges on the wheel
-        for (int i = 1; i < 20; i++) {
-            wedges.add(new Wedge(WedgeType.MONEY));
-        }
+        //put a prize wedge on the wheel
+        wedges.add(new Wedge(WedgeType.PRIZE));
 
     }
     
@@ -53,5 +56,7 @@ public class Wheel {
     public int getAmount() {
         return spinDollarAmount;
     }
+    
+    
     
 }

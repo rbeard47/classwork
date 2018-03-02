@@ -77,5 +77,4 @@ public class Letter {
     public boolean isFound() {
         return guessed;
     }
-    
 }

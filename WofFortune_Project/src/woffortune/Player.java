@@ -6,6 +6,8 @@
 
 package woffortune;
 
+import java.util.ArrayList;
+
 /**
  * Class that defines a player for a game with monetary winnings and 
  * a limited number of choices
@@ -16,6 +18,7 @@ public class Player {
     private String name; // player's name
     private int numGuesses = 0; // number of times they've tried to solve puzzle
     private boolean winner = false;
+    private ArrayList<Prize> prizes = new ArrayList<>();
 
     /**
      * Constructor
@@ -50,35 +53,61 @@ public class Player {
         return name;
     }
 
-    /**
-     * Getter
-     * @return int the number of guesses used up 
-     */
     public int getNumGuesses() {
         return numGuesses;
     }
 
-    /** 
+    /**
      * Add 1 to the number of guesses used up
      */
     public void incrementNumGuesses() {
         this.numGuesses++;
     }
     
+    
     /**
      * Resets for a new game (only number of guesses)
      * This does not reset the winnings.
      */
     public void reset() {
-        this.numGuesses = 0;
+      winnings = 0;
+      numGuesses = 0;
+      winner = false;
     }
     
     public void bankrupt() {
         this.winnings = 0;
+        prizes.clear();
+    }
+
+    public boolean isWinner() {
+        return winner;
+    }
+
+    public void setWinnings(int winnings) {
+        this.winnings = winnings;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNumGuesses(int numGuesses) {
+        this.numGuesses = numGuesses;
+    }
+
+    public void setWinner(boolean winner) {
+        this.winner = winner;
+    }
+
+    public void addPrize(Prize prize) {
+        this.prizes.add(prize);
+    }
+
+    public ArrayList<Prize> getPrizes() {
+        return prizes;
     }
     
-    public boolean getWinner() {
-    return winner;
-    }
+    
     
 }
