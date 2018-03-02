@@ -3,7 +3,7 @@ package woffortune;
 /**
  * This class defines one wedge of a wheel for the wheel of fortune game
  *
- * @author william
+ * @author william beard
  */
 public class Wedge {
 

@@ -5,17 +5,15 @@ import java.util.ArrayList;
 /**
  * Class that defines a player for a game with monetary winnings and 
  * a limited number of choices
- * @author william
+ * @author william beard
  */
 public class Player {
     private int winnings = 0; // amount of money won
     private String name; // player's name
-    private int numGuesses = 0; // number of times they've tried to solve puzzle
-// number of times they've tried to solve puzzle
-    private boolean winner = false;
-    //player's prizes
-    //player's win or loss
-    private final ArrayList<Prize> prizes; 
+    private int numGuesses = 0; // number of times player has guessed
+    private boolean winner = false; // whether or not the player is a winner
+    private final ArrayList<Prize> prizes; // player's prizes
+    private boolean correctAnswer = false;
 
     /**
      * Constructor
@@ -105,6 +103,16 @@ public class Player {
     public ArrayList<Prize> getPrizes() {
         return prizes;
     }
+
+    public boolean isCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public void setCorrectAnswer(boolean correctAnswer) {
+        this.correctAnswer = correctAnswer;
+    }
+    
+    
     
     
     

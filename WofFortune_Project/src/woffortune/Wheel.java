@@ -5,8 +5,8 @@ import java.util.ArrayList;
 /**
  * This class defines a Wheel for the Wheel of Fortune game
  *
- * @author william
- */
+ * @author william beard
+ */ 
 public class Wheel {
 
     public enum WedgeType {MONEY, BANKRUPT, LOSE_TURN, PRIZE} // enumerated type, wheel wedges can be any of these

@@ -8,7 +8,12 @@ import java.util.NoSuchElementException;
 /**
  * WofFortuneGame class Contains all logistics to run the game
  *
- * @author clatulip
+ * @author william beard
+ */
+
+/* 
+ * This is just to ensure it is noticed, but I did the first two bonuses
+ * and the second part of the third bonus (printing out prize data and money)
  */
 public class WofFortuneGame {
 
@@ -50,10 +55,20 @@ public class WofFortuneGame {
             if (i == player_list.size()) {
                 i = 0;
             }
+
+            /*
+             * lets players take their turns, allows a player to have repeated turns
+             * if they repeatedly get the correct answer
+             */
             playTurn(player_list.get(i));
-
-            i++;
-
+            if (player_list.get(i).isCorrectAnswer() == true) {
+                // player takes their turn again
+                System.out.println("You were correct! Go again!");
+                player_list.get(i).setCorrectAnswer(false);
+            } else {
+                // turn increments to next player
+                i++;
+            }
         }
     }
 
@@ -63,38 +78,7 @@ public class WofFortuneGame {
     private void setUpGame() {
         randomPrize();
         addRandomPhrases();
-        System.out.println("How many people are going to play?");
-        Scanner sc = new Scanner(System.in);
-
-        int players = 0;
-        try {
-            players = sc.nextInt();
-        } catch (InputMismatchException ex) {
-            System.out.println("Token not an integer, or is out of range!");
-        } catch (NoSuchElementException ex) {
-            System.out.println("Input is exhausted!");
-        } catch (IllegalStateException ex) {
-            System.out.println("Scanner was closed!");
-        }
-
-        for (int i = 0; i < players; i++) {
-
-            System.out.println("What is your name player " + (i + 1));
-            Scanner nameScanner = new Scanner(System.in);
-
-            String name = "";
-            try {
-                name = nameScanner.nextLine();
-            } catch (NoSuchElementException ex) {
-                System.out.println("No line found!");
-            } catch (IllegalStateException ex) {
-                System.out.println("Scanner was closed!");
-            }
-
-            Player p = new Player(name);
-            player_list.add(p);
-            System.out.println("Hello, " + name + "! Welcome to the Wheel of Fortune!");
-        }
+        playerSetup();
 
         // print out the rules
         System.out.println("RULES!");
@@ -107,17 +91,6 @@ public class WofFortuneGame {
         System.out.println();
 
         phraseChoice();
-
-        /* for each character in the phrase, create a letter and add to letters array
-         * this is part of the original code, left it just for reference
-         * for (int i = 0; i < phrase.length(); i++) {G
-         * user_input_phrase[i] = new Letter(phrase.charAt(i));
-        }
-         */
-        //for each character in the phrase, create a letter and add to user_input_phrase ArrayList
-        for (int i = 0; i < phrase.length(); i++) {
-            user_input_phrase.add(new Letter(phrase.charAt(i)));
-        }
         // setup done
     }
 
@@ -163,11 +136,13 @@ public class WofFortuneGame {
             case LOSE_TURN:
                 System.out.println("LOSE A TURN");
                 System.out.println("So sorry, you lose a turn.");
+                player.setCorrectAnswer(false);
                 return; // doesn't get to guess letter
 
             case BANKRUPT:
                 System.out.println("BANKRUPT");
                 player.bankrupt();
+                player.setCorrectAnswer(false);
                 return; // doesn't get to guess letter
 
             case PRIZE:
@@ -212,8 +187,10 @@ public class WofFortuneGame {
             } else {
                 if (numFound == 1) {
                     System.out.println("Congrats! There is 1 letter " + letter + ":");
+                    player.setCorrectAnswer(true);
                 } else {
                     System.out.println("Congrats! There are " + numFound + " letter " + letter + "'s:");
+                    player.setCorrectAnswer(true);
                 }
                 System.out.println();
                 showPuzzle();
@@ -235,9 +212,7 @@ public class WofFortuneGame {
                     solvePuzzleAttempt(player);
                 }
             }
-
         }
-
     }
 
     /**
@@ -261,25 +236,29 @@ public class WofFortuneGame {
             System.out.println("Congratulations! You guessed it!");
             puzzleSolved = true;
             player.setWinner(true);
+            player.setCorrectAnswer(false);
             // Round is over. Write message with final stats
             for (int i = 0; i < player_list.size(); i++) {
                 System.out.println(player_list.get(i).getName() + ":");
                 System.out.println("You guessed: " + player_list.get(i).getNumGuesses() + " times!");
                 System.out.println("You won $" + player_list.get(i).getWinnings() + "!");
-                if(player.getPrizes().size() > 0) {
-                System.out.print("Prizes: ");
-                ArrayList<Prize> prizes = player.getPrizes(); 
-                for(int k = 0, last = prizes.size() - 1; k < prizes.size(); k++) {
-                    String prizeName = prizes.get(k).getName();
-                    if(k < last) {
-                        System.out.print(prizeName + ", ");
-                    } else {
-                       System.out.print(prizeName); 
+                // checks to see if the player won any prizes
+                if (player.getPrizes().size() > 0) {
+                    System.out.print("Prizes: ");
+                    // gets the list of prizes, outputs it as a final statistic
+                    ArrayList<Prize> prizes = player.getPrizes();
+                    for (int k = 0, last = prizes.size() - 1; k < prizes.size(); k++) {
+                        String prizeName = prizes.get(k).getName();
+                        if (k < last) {
+                            System.out.print(prizeName + ", ");
+                        } else {
+                            System.out.print(prizeName);
+                        }
                     }
+                    System.out.println();
                 }
-                System.out.println();
-                }
-
+                
+                // checks to see if the player was the winner, prints to screen
                 if (player_list.get(i).isWinner() == true) {
                     System.out.println(player_list.get(i).getName() + " is the winner!");
                 } else {
@@ -317,16 +296,20 @@ public class WofFortuneGame {
      */
     public void reset() {
         user_input_phrase.clear();
-        for (Player player : player_list) {
-            player.reset();
+        for (Player plyr : player_list) {
+            plyr.reset();
             puzzleSolved = false;
-            phraseChoice();
-
         }
-    }
 
+        phraseChoice();
+        playerChange();
+    }
+    
+    /**
+     * Lets player choose a custom phrase, or let the program choose a random one
+     */
     public void phraseChoice() {
-        
+
         //prompts the user to see if they would like to type their own phrase or not, adds the components to Letter ArrayList
         System.out.println("Would you like to use a custom phrase? (Y/N)");
         Scanner yN = new Scanner(System.in);
@@ -348,31 +331,41 @@ public class WofFortuneGame {
             System.out.println("Please input your custom phrase!");
             Scanner userInput = new Scanner(System.in);
             String tempString = "";
-            
+
             //catch exceptions for scanner
             try {
-            tempString = userInput.nextLine();
+                tempString = userInput.nextLine();
             } catch (NoSuchElementException ex) {
                 System.out.println("No tokens are available!");
             } catch (IllegalStateException ex) {
                 System.out.println("Scanner was closed!");
             }
-            
+
             phrase = tempString;
-            
+
+            //for each character in the phrase, create a letter and add to user_input_phrase ArrayList
+            for (int i = 0; i < phrase.length(); i++) {
+                user_input_phrase.add(new Letter(phrase.charAt(i)));
+            }
+
         } else {
-            
+
             //user didn't choose a custom phrase, picks a random one from random_phrase
             int randIndex = (int) (Math.random() * (random_phrase.size() - 1));
             phrase = random_phrase.get(randIndex);
+            //for each character in the phrase, create a letter and add to user_input_phrase ArrayList
+            for (int i = 0; i < phrase.length(); i++) {
+                user_input_phrase.add(new Letter(phrase.charAt(i)));
+            }
         }
     }
-    
+
     /**
-     * Creates "random" phrases that are then stored in the ArrayList random_phrase
+     * Creates "random" phrases that are then stored in the ArrayList
+     * random_phrase
      */
     public void addRandomPhrases() {
-        
+
         random_phrase.add("Java is easy!");
         random_phrase.add("Java is hard!");
         random_phrase.add("Java takes time to learn.");
@@ -384,7 +377,7 @@ public class WofFortuneGame {
         random_phrase.add("Make sure you attend your classes!");
         random_phrase.add("Keep up with all your assignments!");
     }
-    
+
     /**
      * Creates prizes and stores them in ArrayList prize_list
      */
@@ -400,5 +393,148 @@ public class WofFortuneGame {
         prize_list.add(pear);
         prize_list.add(grapefruit);
     }
+    
+    /**
+     * Sets up the players for the game, adds them to player_list
+     */
+    public void playerSetup() {
+        System.out.println("How many people are going to play?");
+        Scanner sc = new Scanner(System.in);
+        
+        // catches exceptions for scanner
+        int players = 0;
+        try {
+            players = sc.nextInt();
+        } catch (InputMismatchException ex) {
+            System.out.println("Token not an integer, or is out of range!");
+        } catch (NoSuchElementException ex) {
+            System.out.println("Input is exhausted!");
+        } catch (IllegalStateException ex) {
+            System.out.println("Scanner was closed!");
+        }
 
+        // asks players for name, adds to player_list
+        for (int i = 0; i < players; i++) {
+
+            System.out.println("What is your name player " + (i + 1));
+            Scanner nameScanner = new Scanner(System.in);
+
+            String name = "";
+            try {
+                name = nameScanner.nextLine();
+            } catch (NoSuchElementException ex) {
+                System.out.println("No line found!");
+            } catch (IllegalStateException ex) {
+                System.out.println("Scanner was closed!");
+            }
+
+            Player p = new Player(name);
+            player_list.add(p);
+            System.out.println("Hello, " + name + "! Welcome to the Wheel of Fortune!");
+        }
+
+    }
+
+    /**
+     * Allows a player to be added mid-game
+     */
+    public void addPlayer() {
+        System.out.println("How many people would like to join?");
+        Scanner sc = new Scanner(System.in);
+
+        // catches exceptions from scanner
+        int players = 0;
+        try {
+            players = sc.nextInt();
+        } catch (InputMismatchException ex) {
+            System.out.println("Token not an integer, or is out of range!");
+        } catch (NoSuchElementException ex) {
+            System.out.println("Input is exhausted!");
+        } catch (IllegalStateException ex) {
+            System.out.println("Scanner was closed!");
+        }
+
+        for (int i = 0; i < players; i++) {
+
+            System.out.println("What is your name player " + (player_list.size() + 1));
+            Scanner nameScanner = new Scanner(System.in);
+
+            String name = "";
+            try {
+                name = nameScanner.nextLine();
+            } catch (NoSuchElementException ex) {
+                System.out.println("No line found!");
+            } catch (IllegalStateException ex) {
+                System.out.println("Scanner was closed!");
+            }
+
+            Player p = new Player(name);
+            player_list.add(p);
+            System.out.println("Hello, " + name + "! Welcome to the Wheel of Fortune!");
+        }
+    }
+
+    /**
+     * Allows players to be added or dropped
+     */
+    public void playerChange() {
+        System.out.println("Would you like to add/drop any players? (add/drop/no)");
+        Scanner sc = new Scanner(System.in);
+
+        // catch exceptions from scanner
+        String answer = "";
+        try {
+            answer = sc.nextLine();
+        } catch (NoSuchElementException ex) {
+            System.out.println("No tokens are available!");
+        } catch (IllegalStateException ex) {
+            System.out.println("Scanner was closed!");
+        } catch (IndexOutOfBoundsException ex) {
+            System.out.println("Index doesn't exist!");
+        }
+
+        // checks to see if the player typed add, Add, drop, Drop, or typed nothing
+        if ("add".equals(answer) || "Add".equals(answer)) {
+
+            addPlayer();
+
+        } else if ("drop".equals(answer) || "Drop".equals(answer)) {
+
+            System.out.println("Which player would like to drop? (name)");
+
+            // catches exceptions from scanner
+            String name = "";
+            try {
+                name = sc.nextLine();
+            } catch (NoSuchElementException ex) {
+                System.out.println("No tokens are available!");
+            } catch (IllegalStateException ex) {
+                System.out.println("Scanner was closed!");
+            } catch (IndexOutOfBoundsException ex) {
+                System.out.println("Index doesn't exist!");
+            }
+
+            /**
+             * Creates a temporary ArrayList to store all of the players, but
+             * the one specified then clears the player_list, and copies
+             * tempPlayerList to player_list essentially removing a player
+             */
+            ArrayList<Player> tempPlayerList = new ArrayList<>();
+
+            for (Player player : player_list) {
+
+                if (name.equals(player.getName())) {
+
+                } else {
+                    tempPlayerList.add(player);
+                }
+            }
+            
+            // clears player_list and rewrites tempPlayerList to it
+            player_list.clear();
+            for (Player player : tempPlayerList) {
+                player_list.add(player);
+            }
+        }
+    }
 }

@@ -7,7 +7,7 @@ import java.util.Scanner;
  * Execution Harness for Wheel of Fortune Game Creates wheel, creates game
  * instance, loops through rounds
  *
- * @author william
+ * @author william beard
  */
 public class WofFortune {
 

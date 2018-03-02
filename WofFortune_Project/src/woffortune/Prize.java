@@ -3,7 +3,7 @@ package woffortune;
 /**
  * Used to construct prize objects for player to win
  *
- * @author william
+ * @author william beard
  */
 public class Prize {
 

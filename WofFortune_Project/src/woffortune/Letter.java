@@ -2,7 +2,7 @@ package woffortune;
 
 /**
  * Class that holds letters for a wheel of fortune game
- * @author william
+ * @author william beard
  */
 public class Letter {
     
