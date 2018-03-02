@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package woffortune;
 
 import java.util.Scanner;
@@ -17,13 +12,13 @@ import java.util.NoSuchElementException;
  */
 public class WofFortuneGame {
 
-    private boolean puzzleSolved = false;
-    private Wheel wheel;
-    private String phrase;
-    private ArrayList<Letter> user_input_phrase = new ArrayList<>();
-    private ArrayList<String> random_phrase = new ArrayList<>();
-    private final ArrayList<Player> player_list = new ArrayList<>();
-    private ArrayList<Prize> prize_list = new ArrayList<>();
+    private boolean puzzleSolved = false; // whether or not puzzle is solved
+    private final Wheel wheel; // game wheel
+    private String phrase; // phrase players are trying to guess
+    private final ArrayList<Letter> user_input_phrase; // list of letters in user input phrase
+    private final ArrayList<String> random_phrase; // list of random phrases
+    private final ArrayList<Player> player_list = new ArrayList<>(); // list of players
+    private final ArrayList<Prize> prize_list; // list of prizes
 
     /**
      * Constructor
@@ -32,6 +27,9 @@ public class WofFortuneGame {
      * @throws InterruptedException
      */
     public WofFortuneGame(Wheel wheel) throws InterruptedException {
+        this.prize_list = new ArrayList<>();
+        this.random_phrase = new ArrayList<>();
+        this.user_input_phrase = new ArrayList<>();
         // get the wheel
         this.wheel = wheel;
 
@@ -328,10 +326,12 @@ public class WofFortuneGame {
     }
 
     public void phraseChoice() {
+        
         //prompts the user to see if they would like to type their own phrase or not, adds the components to Letter ArrayList
         System.out.println("Would you like to use a custom phrase? (Y/N)");
         Scanner yN = new Scanner(System.in);
 
+        //catches scanner exceptions
         char promptAnswer = '\0';
         try {
             promptAnswer = yN.next().charAt(0);
@@ -347,15 +347,32 @@ public class WofFortuneGame {
         if ((promptAnswer == 'Y') || (promptAnswer == 'y')) {
             System.out.println("Please input your custom phrase!");
             Scanner userInput = new Scanner(System.in);
-            String tempString = userInput.nextLine();
+            String tempString = "";
+            
+            //catch exceptions for scanner
+            try {
+            tempString = userInput.nextLine();
+            } catch (NoSuchElementException ex) {
+                System.out.println("No tokens are available!");
+            } catch (IllegalStateException ex) {
+                System.out.println("Scanner was closed!");
+            }
+            
             phrase = tempString;
+            
         } else {
+            
+            //user didn't choose a custom phrase, picks a random one from random_phrase
             int randIndex = (int) (Math.random() * (random_phrase.size() - 1));
             phrase = random_phrase.get(randIndex);
         }
     }
-
+    
+    /**
+     * Creates "random" phrases that are then stored in the ArrayList random_phrase
+     */
     public void addRandomPhrases() {
+        
         random_phrase.add("Java is easy!");
         random_phrase.add("Java is hard!");
         random_phrase.add("Java takes time to learn.");
@@ -367,7 +384,10 @@ public class WofFortuneGame {
         random_phrase.add("Make sure you attend your classes!");
         random_phrase.add("Keep up with all your assignments!");
     }
-
+    
+    /**
+     * Creates prizes and stores them in ArrayList prize_list
+     */
     public void randomPrize() {
 
         Prize apple = new Prize("Apple");

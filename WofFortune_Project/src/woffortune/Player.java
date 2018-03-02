@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package woffortune;
 
 import java.util.ArrayList;
@@ -11,20 +5,24 @@ import java.util.ArrayList;
 /**
  * Class that defines a player for a game with monetary winnings and 
  * a limited number of choices
- * @author clatulip
+ * @author william
  */
 public class Player {
     private int winnings = 0; // amount of money won
     private String name; // player's name
     private int numGuesses = 0; // number of times they've tried to solve puzzle
+// number of times they've tried to solve puzzle
     private boolean winner = false;
-    private ArrayList<Prize> prizes = new ArrayList<>();
+    //player's prizes
+    //player's win or loss
+    private final ArrayList<Prize> prizes; 
 
     /**
      * Constructor
      * @param name String that is the player's name
      */
     public Player(String name) {
+        this.prizes = new ArrayList<>();
         this.name = name;
     }
 

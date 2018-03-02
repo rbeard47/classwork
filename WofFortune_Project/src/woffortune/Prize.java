@@ -1,20 +1,29 @@
 package woffortune;
 
 /**
+ * Used to construct prize objects for player to win
  *
- * @author willi
+ * @author william
  */
 public class Prize {
-    private String name;
-    
+
+    private final String name; //name of prize
+
+    /**
+     *
+     * @param name
+     */
     public Prize(String name) {
         this.name = name;
     }
 
+    /**
+     * Getter
+     *
+     * @return string name
+     */
     public String getName() {
         return name;
     }
-    
-    
-    
+
 }

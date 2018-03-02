@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package woffortune;
 
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -13,7 +7,7 @@ import java.util.Scanner;
  * Execution Harness for Wheel of Fortune Game Creates wheel, creates game
  * instance, loops through rounds
  *
- * @author clatulip
+ * @author william
  */
 public class WofFortune {
 
@@ -36,7 +30,8 @@ public class WofFortune {
             // game played and ended, see if they want to play another round
             System.out.println();
             System.out.println("Would you like to play again?");
-            
+
+            //catch exceptions for char ans
             char ans = '\0';
             try {
                 ans = sc.next().charAt(0);
@@ -47,7 +42,7 @@ public class WofFortune {
             } catch (IndexOutOfBoundsException ex) {
                 System.out.println("Index doesn't exist!");
             }
-            
+
             if ((ans == 'y') || (ans == 'Y')) {
                 // play again
                 round += 1;
@@ -63,4 +58,4 @@ public class WofFortune {
 
     }
 
-}
+} //end of WofFortune.java

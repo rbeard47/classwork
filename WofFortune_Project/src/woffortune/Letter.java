@@ -1,17 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package woffortune;
 
 /**
  * Class that holds letters for a wheel of fortune game
- * @author clatulip
+ * @author william
  */
 public class Letter {
-    private char letter; // the letter
+    
+    private final char letter; // the letter
     private boolean guessed = false; // whether or not it has been guessed
     private boolean capitalized = false; // whether it is a capital letter
     private boolean space = false; // whether it is a space
@@ -19,9 +14,10 @@ public class Letter {
     /**
      * Constructor - builds the Letter object
      * If letter is special character, we mark it as guessed
-     * so that it shows.
-     * @param char letter 
+     * so that it shows. 
+     * @param letter
      */
+    @SuppressWarnings("UnusedAssignment")
     public Letter(char letter) {
         this.letter = letter;
         // find out if this is a space
