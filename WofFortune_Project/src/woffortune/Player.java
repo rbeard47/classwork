@@ -15,6 +15,7 @@ public class Player {
     private int winnings = 0; // amount of money won
     private String name; // player's name
     private int numGuesses = 0; // number of times they've tried to solve puzzle
+    private boolean winner = false;
 
     /**
      * Constructor
@@ -74,6 +75,10 @@ public class Player {
     
     public void bankrupt() {
         this.winnings = 0;
+    }
+    
+    public boolean getWinner() {
+    return winner;
     }
     
 }
