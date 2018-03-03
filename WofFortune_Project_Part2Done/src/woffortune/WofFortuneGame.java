@@ -7,7 +7,7 @@
 package woffortune;
 
 import java.util.Scanner;
-
+import java.util.ArrayList;
 /**
  * WofFortuneGame class
  * Contains all logistics to run the game
@@ -17,11 +17,14 @@ public class WofFortuneGame {
 
     private boolean puzzleSolved = false;
 
+    private static boolean foo;
     private Wheel wheel;
     private Player player1;
     private String phrase = "Once upon a time";
-    private Letter[] letter_array = new Letter[16];
-
+    //private Letter[] user_input_phrase = new Letter[16];
+    private ArrayList<Letter> user_input_phrase = new ArrayList<>();
+    private ArrayList<String> random_phrase = new ArrayList<>();
+    
     /**
      * Constructor
      * @param wheel Wheel 
@@ -36,6 +39,9 @@ public class WofFortuneGame {
         
 
     }
+    
+    
+    
     
     /**
      * Plays the game
@@ -55,6 +61,7 @@ public class WofFortuneGame {
     private void setUpGame() {
         // create a single player 
         player1 = new Player("Player1");
+        addRandomPhrases();
         
         // print out the rules
         System.out.println("RULES!");
@@ -66,9 +73,31 @@ public class WofFortuneGame {
         System.out.println("you can still guess letters, but no longer solve the puzzle.");
         System.out.println();
         
-        // for each character in the phrase, create a letter and add to letters array
-        for (int i = 0; i < phrase.length(); i++) {
-            letter_array[i] = new Letter(phrase.charAt(i));
+        //prompts the user to see if they would like to type their own phrase or not, adds the components to Letter ArrayList
+        System.out.println("Would you like to use a custom phrase? (Y/N)");
+        Scanner yN = new Scanner(System.in);
+        char promptAnswer = yN.next().charAt(0);
+        System.out.println();
+        if ((promptAnswer == 'Y') || (promptAnswer == 'y')) {
+        System.out.println("Please input your custom phrase!");
+        Scanner userInput = new Scanner(System.in);
+        String tempString = userInput.nextLine();
+        phrase = tempString;
+        } else {
+            int randIndex = (int) (Math.random()* (random_phrase.size() - 1));
+            phrase = random_phrase.get(randIndex);
+        }
+        
+        /* for each character in the phrase, create a letter and add to letters array
+         * this is part of the original code, left it just for reference
+         * for (int i = 0; i < phrase.length(); i++) {
+         * user_input_phrase[i] = new Letter(phrase.charAt(i));
+        }
+        */
+        
+        //for each character in the phrase, create a letter and add to user_input_phrase ArrayList
+        for(int i = 0; i < phrase.length(); i++) {
+            user_input_phrase.add(new Letter(phrase.charAt(i)));
         }
         // setup done
     }
@@ -123,7 +152,7 @@ public class WofFortuneGame {
         } else {
             // search for letter to see if it is in
             int numFound = 0;
-            for (Letter l : letter_array) {
+            for (Letter l : user_input_phrase) {
                 if ((l.getLetter() == letter) || (l.getLetter() == Character.toUpperCase(letter))) {
                     l.setFound();
                     numFound += 1;
@@ -188,7 +217,7 @@ public class WofFortuneGame {
      */
     private void showPuzzle() {
         System.out.print("\t\t");
-        for (Letter l : letter_array) {
+        for (Letter l : user_input_phrase) {
             if (l.isSpace()) {
                 System.out.print("   ");
             } else {
@@ -203,11 +232,26 @@ public class WofFortuneGame {
         
     }
     
+    
+    
     /**
      * For a new game reset player's number of guesses to 0
      */
     public void reset() {
         player1.reset();
+    }
+    
+    public void addRandomPhrases() {
+        random_phrase.add("Java is easy!");
+        random_phrase.add("Java is hard!");
+        random_phrase.add("Java takes time to learn.");
+        random_phrase.add("Java is a cooler than lua!");
+        random_phrase.add("Programming is fufilling!");
+        random_phrase.add("Problem solving is fun!");
+        random_phrase.add("Get to know your professors!");
+        random_phrase.add("Get to know your TA's!");
+        random_phrase.add("Make sure you attend your classes!");
+        random_phrase.add("Keep up with all your assignments!");
     }
   
 }
