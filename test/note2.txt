@@ -2,7 +2,5 @@ My new file.
 2a
 3b
 4c
-5d
-6e
 7f
 8g
