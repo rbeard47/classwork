@@ -95,8 +95,9 @@ public class Assignment1_ITIS1213 {
         //myPoem.playReverseOrder(100);
         //myPoem.playDoublets(5);
         //myPoem.playTriplets(5);
-        //myPoem.play(200, "exportSound.wav", "C:\\netBeansProjects\\classwork");
-        myPoem.playRandomOrder(10, 200, "exportSound.wav", "C:\\netBeansProjects\\classwork");
+        //myPoem.play(2000, "exportSound.wav", "C:\\netBeansProjects\\classwork");
+        //myPoem.playRandomOrder(10, 2000, "exportSound.wav", "C:\\netBeansProjects\\classwork");
+        myPoem.playRandomUnique(200, "exportSound.wav", "C:\\netBeansProjects\\classword");
         // Part 4: When you get to part 4, comment everything from line 28 through line 93, then uncomment the four lines of 
         // code below and run the project to see what happens.
         // Then look at the CupSong class as an example for how to build your own song-playing class.

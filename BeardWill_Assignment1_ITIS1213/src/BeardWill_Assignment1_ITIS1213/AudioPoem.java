@@ -75,6 +75,11 @@ public class AudioPoem {
         /*plays the words in order with a specified pause in between each and writes this new sound to a file with a
          *specified location
          */
+        //plays the words in order with a specified pause in between each
+        for (int i = 0; i < numWords; i++) {
+            myWordArray[i].blockingPlay();
+            Thread.sleep(pause);
+        }
         double samplingRate = myWordArray[0].getSamplingRate();
         int pauseFrames = (int) (samplingRate * (pause / 1000));
         int totalSamples = 0;
@@ -92,9 +97,11 @@ public class AudioPoem {
                     currentSample < myWordArray[i].getLength(); currentSample++, exportSoundSample++) {
                 exportSound.setSampleValueAt(exportSoundSample, myWordArray[i].getSampleValueAt(currentSample));
             }
-
+            
+            //checks to see if this is the last word in the Sound[] myWordArray to ensure no pause is put after the last word
+            boolean last = (i==numWords - 1);
             //write number of samples in specified pause time to exportSound's sampleArray to a value of 0
-            for (int pauseSample = 0; pauseSample < pauseFrames; pauseSample++, exportSoundSample++) {
+            for (int pauseSample = 0; !last && pauseSample < pauseFrames; pauseSample++, exportSoundSample++) {
                 exportSound.setSampleValueAt(exportSoundSample, 0);
             }
         }
@@ -124,7 +131,6 @@ public class AudioPoem {
      * @param filename
      * @param path
      * @throws InterruptedException
-     * THIS METHOD HAS A TIMING ERROR IN THE EXPORTED .WAV FILE
      */
     public void playRandomOrder(int totalWords, int pause, String filename, String path) throws InterruptedException {
         
@@ -139,10 +145,16 @@ public class AudioPoem {
         //myWordArray. Also sets the values of the int[] wordOrder for usage later. Also increments the sampleLength for the
         //creation of Sound exportSound
         for (int currentWord = 0; currentWord < totalWords; currentWord++) {
+            
+            //generates a random index randomIndex
             int randomIndex = (int) (Math.random() * numWords);
+            //plays the Sound from the Sound[] myWordArray at the index randomIndex
             myWordArray[randomIndex].blockingPlay();
+            //adds the length of the sound at the Sound[] myWordArray in samples to the variable numSamples
             numSamples += myWordArray[randomIndex].getNumSamples();
+            //sets the int[] wordOrder at the index currentWord to the value of the random index randomIndex for later use
             wordOrder[currentWord] = randomIndex;
+            //sleeps for the time specified by the parameter pause passed in at the beginning of the method
             Thread.sleep(pause);
         }
         
@@ -165,13 +177,17 @@ public class AudioPoem {
             //Sound[] myWordArray
             for(int wordSample = 0; wordSample < myWordArray[wordOrder[i]].getNumSamples(); wordSample++, exportSoundSample++) {
                 
+                //copies the sample value of the current sample of the sound in the Sound[] myWordArray
+                //to the current sample of the exportSound Sound object
                 exportSound.setSampleValueAt(exportSoundSample, myWordArray[wordOrder[i]].getSampleValueAt(wordSample));
                 
             }
             
+            //checks to see if this is the last word in the Sound[] myWordArray to ensure no pause is put after the last word
+            boolean last = (i==totalWords - 1);
             //increments through the samples in exportSound for the number of samples in a calculated pause
             //and sets them equal to zero to simulate silence
-            for(int pauseSample = 0; pauseSample < pauseFrames; pauseSample++, exportSoundSample++) {
+            for(int pauseSample = 0; !last && pauseSample < pauseFrames; pauseSample++, exportSoundSample++) {
                 
                 exportSound.setSampleValueAt(exportSoundSample, 0);
                 
@@ -188,20 +204,35 @@ public class AudioPoem {
      * @throws InterruptedException
      */
     public void playRandomUnique(int pause) throws InterruptedException {
-
+        
+        //create a boolean[] to keep track of whether or not the random sound has been played
         boolean[] hasBeenPlayed = new boolean[numWords];
+        //initializes the boolean isDone to false;
         boolean isDone = false;
+        
+        //creates a loop that runs until every element of the boolean[] hasBeenPlayed returns the value true, upon which
+        //it will break and continue on to the rest of the code
         while (isDone == false) {
-
+            
+            //selects a random index that is used by the rest of the code in the loop
             int randomIndex = (int) (Math.random() * numWords);
-
+            
+            //checks if the current randomIndex index of the boolean[] hasBeenPlayed returns false
+            //if so, it continues
             if (hasBeenPlayed[randomIndex] == false) {
+                
+                //plays the Sound at the index randomIndex within the Sound[] myWordArray
                 myWordArray[randomIndex].blockingPlay();
+                //pauses for a specified time passed in as a parameter at the beginning of the method
                 Thread.sleep(pause);
+                //sets the boolean[] value at the index randomIndex to true
                 hasBeenPlayed[randomIndex] = true;
             }
+            //sets the boolean isDone to be true, which will break the while loop and continue on with the rest of the code
             isDone = true;
-
+            
+            //checks through all of the booleans in the boolean[] to ensure that they are true
+            //if any of them are false, then it will set isDone to false and the while loop will resume
             for (int i = 0; isDone && i < numWords; i++) {
                 if (hasBeenPlayed[i] == false) {
                     isDone = false;
@@ -211,6 +242,66 @@ public class AudioPoem {
     }
     
     public void playRandomUnique(int pause, String filename, String path) {
+        
+        //finds the length of the new sound object
+        int totalSamples = 0;
+        double samplingRate = myWordArray[0].getSamplingRate();
+        totalSamples += (int) ((numWords - 1) * (samplingRate * (pause / 1000)));
+        double samplesInAPause = (int) (samplingRate * pause);
+        
+        for(int uniqueWord = 0; uniqueWord < numWords; uniqueWord++) {
+            totalSamples += myWordArray[uniqueWord].getLength();
+        }
+        Sound exportSound = new Sound(totalSamples);
+    
+                
+        //create a boolean[] to keep track of whether or not the random sound has been played
+        boolean[] hasBeenPlayed = new boolean[numWords];
+        //initializes the boolean isDone to false;
+        boolean isDone = false;
+        
+        //creates a loop that runs until every element of the boolean[] hasBeenPlayed returns the value true, upon which
+        //it will break and continue on to the rest of the code
+        while (isDone == false) {
+            
+            //selects a random index that is used by the rest of the code in the loop
+            int randomIndex = (int) (Math.random() * numWords);
+            
+            //checks if the current randomIndex index of the boolean[] hasBeenPlayed returns false
+            //if so, it continues
+            if (hasBeenPlayed[randomIndex] == false) {
+                
+                //plays the Sound at the index randomIndex within the Sound[] myWordArray
+                myWordArray[randomIndex].blockingPlay();
+                //pauses for a specified time passed in as a parameter at the beginning of the method
+                Thread.sleep(pause);
+                //sets the boolean[] value at the index randomIndex to true
+                hasBeenPlayed[randomIndex] = true;
+            }
+            //sets the boolean isDone to be true, which will break the while loop and continue on with the rest of the code
+            isDone = true;
+            
+            //checks through all of the booleans in the boolean[] to ensure that they are true
+            //if any of them are false, then it will set isDone to false and the while loop will resume
+            for (int i = 0; isDone && i < numWords; i++) {
+                if (hasBeenPlayed[i] == false) {
+                    isDone = false;
+                }
+            }
+        }
+        int exportSample = 0;
+            for(int i = 0; i < numWords; i++) {
+                for(int sample = 0; sample < myWordArray[i].getLength(); sample++, exportSample++) {
+                    exportSound.setSampleValueAt(exportSample, myWordArray[i].getSampleValueAt(sample));
+                }
+                boolean last = (i==numWords - 1);
+                for(int k = 0; !last && k < samplesInAPause; k++, exportSample++) {
+                    exportSound.setSampleValueAt(exportSample, 0);
+                }
+            }
+            
+            File exportFile = new File(path, filename);
+        exportSound.write(exportFile.getPath());
         
     }
 
