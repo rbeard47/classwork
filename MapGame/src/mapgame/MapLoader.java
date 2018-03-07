@@ -28,7 +28,9 @@ public class MapLoader {
         JsonParser mapParser = new JsonParser();
 
         try {
-            JsonObject map = (JsonObject) mapParser.parse(new FileReader(jsonFile));
+            
+            Object obj = mapParser.parse(new FileReader("src/map.json"));
+            JsonObject map = ((JsonObject) obj).get("map").getAsJsonObject();
 
             String version = map.get("version").getAsString();
             this.version = version;
